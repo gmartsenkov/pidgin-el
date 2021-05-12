@@ -7,8 +7,9 @@
                      ,method ,@args))
 
 (defun dbus-get-account (account-id)
-  (let ((alias (pidgin-dbus-purple-call-method "PurpleAccountGetAlias" :int32 account-id)))
-    (list 'id account-id 'alias alias)))
+  (let ((alias (pidgin-dbus-purple-call-method "PurpleAccountGetAlias" :int32 account-id))
+        (name (pidgin-dbus-purple-call-method "PurpleAccountGetUsername" :int32 account-id)))
+    (list 'id account-id 'alias alias 'user-name name)))
 
 (defun dbus-get-active-accounts ()
   (let ((account-ids (pidgin-dbus-purple-call-method "PurpleAccountsGetAllActive")))
@@ -16,8 +17,9 @@
 
 (defun get-buddy (buddy-id)
   (let ((alias (pidgin-dbus-purple-call-method "PurpleBuddyGetAlias" :int32 buddy-id))
-        (online (pidgin-dbus-purple-call-method "PurpleBuddyIsOnline" :int32 buddy-id)))
-    (list 'id buddy-id 'alias alias 'online online)))
+        (online (pidgin-dbus-purple-call-method "PurpleBuddyIsOnline" :int32 buddy-id))
+        (name (pidgin-dbus-purple-call-method "PurpleBuddyGetName" :int32 buddy-id)))
+    (list 'id buddy-id 'alias alias 'name name 'online online)))
 
 (defun dbus-get-buddies-all ()
   (let ((buddies (pidgin-dbus-purple-call-method "PurpleBlistGetBuddies")))

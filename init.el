@@ -8,9 +8,30 @@
 ;; (ivy-read "Pick a person: "
 ;; '("one" "two" "three"))
 
+(setq accounts (dbus-get-active-accounts))
+
+(defface pidgin-chat-me
+  '((t :foreground "red" :weight bold))
+  "Face for pidgin chat logged in user name"
+  :group 'pidgin-chat-faces)
+
+(defface pidgin-chat-other-user
+  '((t :foreground "blue" :weight bold))
+  "Face for other user in a pidgin chat"
+  :group 'pidgin-chat-faces)
+
+(defun sender-style (sender)
+  (let* ((my-names (flatten-list
+                    (mapcar (lambda (x)
+                              (list (plist-get x 'name) (plist-get x 'alias))) accounts)))
+         (me (member sender my-names)))
+    (if me
+        (propertize sender 'face 'pidgin-chat-me)
+      (propertize sender 'face 'pidgin-chat-other-user))))
+
 (defun format-msg (msg)
   (concat
-   (plist-get msg 'sender) ": "
+   (sender-style (plist-get msg 'sender)) ": "
    (plist-get msg 'message) "\n"))
 
 (defun populate-conversation-buffer (conversation-name buffer)
@@ -33,8 +54,8 @@
   (interactive)
   (let* ((conversations (dbus-get-conversations))
          (conversation-name (ivy-read "Conversations: "
-                                 (mapcar (lambda (x) (plist-get x 'title)) conversations)
-                                 :require-match t)))
+                                      (mapcar (lambda (x) (plist-get x 'title)) conversations)
+                                      :require-match t)))
     (-> conversation-name
       (create-conversation-buffer (concat "Pidgin: " conversation-name))
       (switch-to-buffer nil 'force-same-window))))
