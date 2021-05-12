@@ -6,6 +6,16 @@
                      "im.pidgin.purple.PurpleInterface"
                      ,method ,@args))
 
+(defun pidgin-recieve-signal (account sender text conversation flags)
+  (message sender)
+  (message text))
+
+;; (dbus-register-signal :session "im.pidgin.purple.PurpleService"
+;;                           "/im/pidgin/purple/PurpleObject"
+;;                           "im.pidgin.purple.PurpleInterface"
+;;                           "ReceivedImMsg"
+;;                           'pidgin-recieve-signal)
+
 (defun dbus-get-account (account-id)
   (let ((alias (pidgin-dbus-purple-call-method "PurpleAccountGetAlias" :int32 account-id))
         (name (pidgin-dbus-purple-call-method "PurpleAccountGetUsername" :int32 account-id)))
