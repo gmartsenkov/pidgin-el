@@ -1,7 +1,6 @@
 (load "./dbus.el")
 
-(let ((account-ids (dbus-account-ids)))
-  (mapcar 'dbus-get-user account-ids))
-
+(dbus-get-active-accounts)
+(dbus-get-buddies-all 282)
 ;; (ivy-read "Pick a person: "
 ;; '("one" "two" "three"))
