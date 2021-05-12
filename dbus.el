@@ -32,3 +32,16 @@
 (defun dbus-get-conversations ()
   (let ((conversations (pidgin-dbus-purple-call-method "PurpleGetConversations")))
     (mapcar 'get-conversation conversations)))
+
+(defun get-message (message-id)
+  (let ((sender (pidgin-dbus-purple-call-method "PurpleConversationMessageGetSender" :int32 message-id))
+        (timestamp (pidgin-dbus-purple-call-method "PurpleConversationMessageGetTimestamp" :int32 message-id))
+        (msg (pidgin-dbus-purple-call-method "PurpleConversationMessageGetMessage" :int32 message-id)))
+    (list 'id message-id
+          'message msg
+          'sender sender
+          'timestamp timestamp)))
+
+(defun dbus-get-conversation-history (conversation-id)
+  (let ((message-history (pidgin-dbus-purple-call-method "PurpleConversationGetMessageHistory" :int32 conversation-id)))
+    (mapcar 'get-message message-history)))
