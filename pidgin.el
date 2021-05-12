@@ -5,9 +5,6 @@
 (dbus-get-conversations)
 (dbus-get-conversation-history 160922)
 
-;; (ivy-read "Pick a person: "
-;; '("one" "two" "three"))
-
 (setq accounts (dbus-get-active-accounts))
 
 (defface pidgin-chat-me
