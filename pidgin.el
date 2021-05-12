@@ -23,7 +23,7 @@
 (defun sender-style (sender)
   (let* ((my-names (flatten-list
                     (mapcar (lambda (x)
-                              (list (plist-get x 'name) (plist-get x 'alias))) accounts)))
+                              (list (plist-get x 'user-name) (plist-get x 'alias))) accounts)))
          (me (member sender my-names)))
     (if me
         (propertize sender 'face 'pidgin-chat-me)
