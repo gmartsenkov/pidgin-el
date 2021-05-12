@@ -21,3 +21,14 @@
 (defun dbus-get-buddies-all (account-id)
   (let ((buddies (pidgin-dbus-purple-call-method "PurpleFindBuddies" :int32 account-id :string "")))
     (mapcar 'get-buddy buddies)))
+
+(defun get-conversation (conversation-id)
+  (let ((title (pidgin-dbus-purple-call-method "PurpleConversationGetTitle" :int32 conversation-id))
+        (type (pidgin-dbus-purple-call-method "PurpleConversationGetType" :int32 conversation-id)))
+    (list 'id conversation-id
+          'title title
+          'type type)))
+
+(defun dbus-get-conversations ()
+  (let ((conversations (pidgin-dbus-purple-call-method "PurpleGetConversations")))
+    (mapcar 'get-conversation conversations)))
