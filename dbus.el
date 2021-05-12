@@ -19,8 +19,8 @@
         (online (pidgin-dbus-purple-call-method "PurpleBuddyIsOnline" :int32 buddy-id)))
     (list 'id buddy-id 'alias alias 'online online)))
 
-(defun dbus-get-buddies-all (account-id)
-  (let ((buddies (pidgin-dbus-purple-call-method "PurpleFindBuddies" :int32 account-id :string "")))
+(defun dbus-get-buddies-all ()
+  (let ((buddies (pidgin-dbus-purple-call-method "PurpleBlistGetBuddies")))
     (mapcar 'get-buddy buddies)))
 
 (defun get-conversation (conversation-id)
@@ -49,5 +49,3 @@
 
 (defun dbus-get-conversation-by-name (name)
   (seq-find (lambda (x) (string= name (plist-get x 'title))) (dbus-get-conversations)))
-
-(dbus-get-conversation-by-name "Elena Dyankova")
