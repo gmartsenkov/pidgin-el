@@ -15,8 +15,9 @@
     (mapcar 'dbus-get-account account-ids)))
 
 (defun get-buddy (buddy-id)
-  (let ((alias (pidgin-dbus-purple-call-method "PurpleBuddyGetAlias" :int32 buddy-id)))
-    (list 'id buddy-id 'alias alias)))
+  (let ((alias (pidgin-dbus-purple-call-method "PurpleBuddyGetAlias" :int32 buddy-id))
+        (online (pidgin-dbus-purple-call-method "PurpleBuddyIsOnline" :int32 buddy-id)))
+    (list 'id buddy-id 'alias alias 'online online)))
 
 (defun dbus-get-buddies-all (account-id)
   (let ((buddies (pidgin-dbus-purple-call-method "PurpleFindBuddies" :int32 account-id :string "")))
