@@ -8,19 +8,35 @@
 ;; (ivy-read "Pick a person: "
 ;; '("one" "two" "three"))
 
-(defun create-or-switch-buffer (name)
-  (if-let ((buffer (get-buffer name)))
+(defun format-msg (msg)
+  (concat
+   (plist-get msg 'sender) ": "
+   (plist-get msg 'message) "\n"))
+
+(defun populate-conversation-buffer (conversation-name buffer)
+  (let* ((conversation (dbus-get-conversation-by-name conversation-name))
+         (history (dbus-get-conversation-history (plist-get conversation 'id))))
+    (with-current-buffer buffer
+      (dolist (msg history)
+        (insert (format-msg msg)))
+      (text-mode))
+    buffer))
+
+(defun create-conversation-buffer (conversation-name buff-name)
+  (if-let ((buffer (get-buffer buff-name)))
       buffer
-    (generate-new-buffer name)))
+    (->> buff-name
+      (generate-new-buffer)
+      (populate-conversation-buffer conversation-name))))
 
 (defun pidgin-select-conversation ()
   (interactive)
-  (let ((conversations (dbus-get-conversations)))
-    (ivy-read "Conversations: "
-              (mapcar (lambda (x) (plist-get x 'title)) conversations)
-              :action (lambda (name) (-> name
-                                       (create-or-switch-buffer)
-                                       (switch-to-buffer nil 'force-same-window)))
-              :require-match t)))
+  (let* ((conversations (dbus-get-conversations))
+         (conversation-name (ivy-read "Conversations: "
+                                 (mapcar (lambda (x) (plist-get x 'title)) conversations)
+                                 :require-match t)))
+    (-> conversation-name
+      (create-conversation-buffer (concat "Pidgin: " conversation-name))
+      (switch-to-buffer nil 'force-same-window))))
 
 (pidgin-select-conversation)

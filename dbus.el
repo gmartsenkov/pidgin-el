@@ -46,3 +46,8 @@
 (defun dbus-get-conversation-history (conversation-id)
   (let ((message-history (pidgin-dbus-purple-call-method "PurpleConversationGetMessageHistory" :int32 conversation-id)))
     (mapcar 'get-message message-history)))
+
+(defun dbus-get-conversation-by-name (name)
+  (seq-find (lambda (x) (string= name (plist-get x 'title))) (dbus-get-conversations)))
+
+(dbus-get-conversation-by-name "Elena Dyankova")
