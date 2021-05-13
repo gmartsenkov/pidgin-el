@@ -1,11 +1,14 @@
 (load "./dbus.el")
 
-(dbus-get-active-accounts)
-(dbus-get-buddies-all)
-(dbus-get-conversations)
-(dbus-get-conversation-history 160922)
+;(dbus-get-active-accounts)
+;(dbus-get-buddies-all)
+;(dbus-get-conversations)
+;(dbus-get-conversation-history 160922)
 
 (setq accounts (dbus-get-active-accounts))
+
+(define-derived-mode pidgin-mode text-mode "Pidgin"
+  (message "Hit"))
 
 (defface pidgin-chat-me
   '((t :foreground "red" :weight bold))
@@ -23,21 +26,22 @@
                               (list (plist-get x 'user-name) (plist-get x 'alias))) accounts)))
          (me (member sender my-names)))
     (if me
-        (propertize sender 'face 'pidgin-chat-me)
-      (propertize sender 'face 'pidgin-chat-other-user))))
+        (propertize sender 'face 'pidgin-chat-me 'read-only t)
+      (propertize sender 'face 'pidgin-chat-other-user 'read-only t))))
 
 (defun format-msg (msg)
   (concat
    (sender-style (plist-get msg 'sender)) ": "
-   (plist-get msg 'message) "\n"))
+   (propertize (plist-get msg 'message) 'read-only t) "\n"))
 
 (defun populate-conversation-buffer (conversation-name buffer)
   (let* ((conversation (dbus-get-conversation-by-name conversation-name))
          (history (dbus-get-conversation-history (plist-get conversation 'id))))
     (with-current-buffer buffer
+      (pidgin-mode)
       (dolist (msg history)
         (insert (format-msg msg)))
-      (text-mode))
+      (insert (concat (propertize "####\n>" 'read-only t) " ")))
     buffer))
 
 (defun create-conversation-buffer (conversation-name buff-name)
