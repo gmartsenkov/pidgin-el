@@ -1,13 +1,24 @@
-(load "./dbus.el")
-
-;(dbus-get-active-accounts)
-;(dbus-get-buddies-all)
-;(dbus-get-conversations)
-;(dbus-get-conversation-history 160922)
+(require 'pidgin-dbus)
 
 (setq accounts (dbus-get-active-accounts))
 
+(defun strip-text-properties(txt)
+  (set-text-properties 0 (length txt) nil txt)
+  txt)
+
+(defun pidgin-send-message ()
+  (interactive)
+  (let* ((buffer (strip-text-properties (buffer-string)))
+         (msg (nth 0 (last (split-string buffer "####\n> ")))))
+    (message msg)))
+
+(defvar pidgin-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-c C-c") 'pidgin-send-message)
+    map))
+
 (define-derived-mode pidgin-mode text-mode "Pidgin"
+  (use-local-map pidgin-mode-map)
   (message "Hit"))
 
 (defface pidgin-chat-me

@@ -37,10 +37,12 @@
 
 (defun get-conversation (conversation-id)
   (let ((title (pidgin-dbus-purple-call-method "PurpleConversationGetTitle" :int32 conversation-id))
-        (type (pidgin-dbus-purple-call-method "PurpleConversationGetType" :int32 conversation-id)))
+        (type (pidgin-dbus-purple-call-method "PurpleConversationGetType" :int32 conversation-id))
+        (im-id (pidgin-dbus-purple-call-method "PurpleConvIm" :int32 conversation-id)))
     (list 'id conversation-id
           'title title
-          'type type)))
+          'type type
+          'im-id im-id)))
 
 (defun dbus-get-conversations ()
   (let ((conversations (pidgin-dbus-purple-call-method "PurpleGetConversations")))
@@ -61,3 +63,5 @@
 
 (defun dbus-get-conversation-by-name (name)
   (seq-find (lambda (x) (string= name (plist-get x 'title))) (dbus-get-conversations)))
+
+(provide 'pidgin-dbus)
