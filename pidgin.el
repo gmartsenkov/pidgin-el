@@ -1,20 +1,23 @@
 (require 'pidgin-dbus)
 
 (setq accounts (dbus-get-active-accounts))
+(setq pidgin-current-conv nil)
 
-(defun strip-text-properties(txt)
-  (set-text-properties 0 (length txt) nil txt)
-  txt)
+(defun strip-text-properties (txt)
+  (set-text-properties 0 (length txt) nil txt) txt)
 
 (defun pidgin-send-message ()
   (interactive)
   (let* ((buffer (strip-text-properties (buffer-string)))
          (msg (nth 0 (last (split-string buffer "####\n> ")))))
-    (message msg)))
+    (beginning-of-line)
+    (replace-string msg "")
+    (dbus-send-im-message (plist-get pidgin-current-conv 'im-id) msg)))
 
 (defvar pidgin-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-c C-c") 'pidgin-send-message)
+    (define-key map (kbd "RET") 'pidgin-send-message)
     map))
 
 (define-derived-mode pidgin-mode text-mode "Pidgin"
@@ -50,6 +53,9 @@
          (history (dbus-get-conversation-history (plist-get conversation 'id))))
     (with-current-buffer buffer
       (pidgin-mode)
+      (make-local-variable 'pidgin-current-conv)
+      (setq pidgin-current-conv conversation)
+
       (dolist (msg history)
         (insert (format-msg msg)))
       (insert (concat (propertize "####\n>" 'read-only t) " ")))

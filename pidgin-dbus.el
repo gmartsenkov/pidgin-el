@@ -64,4 +64,7 @@
 (defun dbus-get-conversation-by-name (name)
   (seq-find (lambda (x) (string= name (plist-get x 'title))) (dbus-get-conversations)))
 
+(defun dbus-send-im-message (im-id msg)
+  (pidgin-dbus-purple-call-method "PurpleConvImSend" :int32 im-id :string msg))
+
 (provide 'pidgin-dbus)
